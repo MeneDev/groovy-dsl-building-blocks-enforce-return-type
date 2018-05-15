@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/MeneDev/groovy-dsl-building-blocks-enforce-return-type/tree/master.svg?style=svg)](https://circleci.com/gh/MeneDev/groovy-get-source/tree/master)
 
+[![Twitter URL](https://img.shields.io/twitter/follow/MeneDev.svg?style=social&label=Follow+%20%40MeneDev)](https://twitter.com/MeneDev)
+
 Enforce the return type of a method in groovy. To be used with GroovyShell.
 ## Example
 
@@ -32,8 +34,9 @@ dependencies {
 }
 ```
 
-For more examples have a look at the tests.
+For more examples have a look at the [tests](https://github.com/MeneDev/groovy-dsl-building-blocks-enforce-return-type/blob/master/src/test/groovy/de/menedev/groovy/dsl/buildingblocks/EnforceSpec.groovy).
  
 ## Notes
 This was created as an answer to the question [Groovy: How to get statically inferred return type from AST
 ](https://stackoverflow.com/questions/50337623/groovy-how-to-get-statically-inferred-return-type-from-ast) on Stackoverflow.
+
