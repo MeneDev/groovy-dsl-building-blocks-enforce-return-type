@@ -8,6 +8,36 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class EnforceSpec extends Specification {
+    def 'cannot return "a panda" when enforcing int'() {
+        given:
+        def script = """
+        def shouldReturnInt() {
+          return "a panda"
+        }
+        """
+
+        and:
+        def configuration = new CompilerConfiguration()
+        def enforceReturnType = new EnforceReturnType(ClassHelper.int_TYPE)
+        configuration.addCompilationCustomizers(new ASTTransformationCustomizer(enforceReturnType))
+        def shell = new GroovyShell(new Binding(), configuration)
+
+        when:
+        shell.parse(script)
+
+        then:
+        def ex = thrown(MultipleCompilationErrorsException)
+        ex.toString().trim() == """
+            org.codehaus.groovy.control.MultipleCompilationErrorsException: startup failed:
+            Script1.groovy: 3: [Static type checking] - Method shouldReturnInt must return int but inferred java.lang.String as return type
+             @ line 3, column 18.
+                         return "a panda"
+                                ^
+                                
+            1 error
+        """.stripIndent().readLines().tail().join('\n')
+    }
+
     @Unroll
     def "enforcing #enforcedType produces no error on a method explicitly returning #returnedValue"() {
         given:
@@ -356,10 +386,33 @@ class EnforceSpec extends Specification {
         ClassHelper.long_TYPE | "1L as Number" | ClassHelper.make(Number)
     }
 
-    def createShell() {
+    def 'only enforce when checkMethod predicate matches'() {
+        given:
+        def script = """
+        def intMethod1() {
+          return "a panda"
+        }
+        def intMethod2() {
+          return "a panda"
+        }
+        def notChecked() {
+          return "a panda"
+        }
+        """
+
+        and:
         def configuration = new CompilerConfiguration()
-        configuration.addCompilationCustomizers(importCustomizer)
+        def enforceReturnType = new EnforceReturnType(ClassHelper.int_TYPE,
+                { !it.synthetic && it.name.startsWith("int")}
+        )
+        configuration.addCompilationCustomizers(new ASTTransformationCustomizer(enforceReturnType))
         def shell = new GroovyShell(new Binding(), configuration)
-        return shell
+
+        when:
+        shell.parse(script)
+
+        then:
+        def ex = thrown(MultipleCompilationErrorsException)
+        ex.errorCollector.errorCount == 2
     }
 }

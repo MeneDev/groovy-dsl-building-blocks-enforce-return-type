@@ -71,7 +71,7 @@ class EnforceReturnTypeCheckingExtension extends AbstractTypeCheckingExtension {
                         // generated expressions can have no source position
                         node = methodNode
                     }
-                    addStaticTypeError("Method $methodNode.name must return $enforcedType but inferred ${inferredType.redirect()}", node)
+                    addStaticTypeError("Method $methodNode.name must return $enforcedType but inferred ${inferredType.redirect()} as return type", node)
                 }
             }
         }
